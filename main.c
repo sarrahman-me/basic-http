@@ -57,11 +57,33 @@ int main() {
     read(client_fd, buffer, sizeof(buffer));
     printf("Koneksi di terima %s \n", buffer);
 
-    char *reply = "HTTP/1.1 200 OK\r\n"
-                  "Content-Type: text/html\r\n"
-                  "Content-Length: 22\r\n\r\n"
-                  "<h1>Hello, World!</h1>";
-    send(client_fd, reply, strlen(reply), 0);
+    char method[8], path[1024], version[16];
+    sscanf(buffer, "%s %s %s", method, path, version);
+
+    printf("Method : %s, Path: %s, Version: %s \n", method, path, version);
+
+    if (strcmp(path, "/") == 0) {
+      char *response = "HTTP/1.1 200 OK\r\n"
+                       "Content-Type: text/html\r\n"
+                       "Content-Length: 22\r\n\r\n"
+                       "<h1>main page</h1>";
+
+      send(client_fd, response, strlen(response), 0);
+    } else if (strcmp(path, "/hello") == 0) {
+      char *response = "http/1.1 200 ok\r\n"
+                       "content-type: text/html\r\n"
+                       "content-length: 24\r\n\r\n"
+                       "<h1>hello, rahman!</h1>";
+
+      send(client_fd, response, strlen(response), 0);
+    } else {
+      char *response = "http/1.1 404 Not Found\r\n"
+                       "content-type: text/html\r\n"
+                       "content-length: 22\r\n\r\n"
+                       "<h1>Not Found 404</h1>";
+
+      send(client_fd, response, strlen(response), 0);
+    }
 
     close(client_fd);
   }
